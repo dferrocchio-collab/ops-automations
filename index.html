@@ -411,6 +411,11 @@
       Gantt Update
       <span class="nav-badge activo" id="nav-badge-gantt">activo</span>
     </a>
+    <a class="nav-item" onclick="showPage('zurich')" href="#">
+      <span class="nav-icon">🛡️</span>
+      Zurich FWA Alerts
+      <span class="nav-badge activo" id="nav-badge-zurich">activo</span>
+    </a>
     <a class="nav-item" onclick="showPage('mercantil')" href="#">
       <span class="nav-icon">📊</span>
       Mercantil - Report
@@ -733,6 +738,157 @@ Finalizado              →  04 - Completo        100%</span>
 
   </div>
 
+  <!-- PAGE: Zurich FWA Alerts -->
+  <div class="page" id="page-zurich">
+
+    <div class="page-header">
+      <div class="eyebrow">Automatización · Google Apps Script</div>
+      <h1>Zurich FWA Alerts</h1>
+      <p>Lee los mails de validación de riesgo de fraude (FWA) de Zurich, extrae la categoría y ponderación de cada alerta, y carga automáticamente cada caso en un Google Sheet para seguimiento del equipo.</p>
+      <div class="header-meta">
+        <div class="meta-item">
+          <span class="meta-label">Última actualización</span>
+          <span class="meta-value">25 de junio, 2026</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Owner</span>
+          <span class="meta-value">Diego Ferrocchio</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Plataforma</span>
+          <span class="meta-value">Google Apps Script</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Estado</span>
+          <span class="meta-value" style="color: var(--green);">● Activo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="automation-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-icon blue">🛡️</div>
+          <div>
+            <div class="card-name">Zurich Risk Alerts → Google Sheets</div>
+            <div class="card-desc">Busca mails "Notificación validación tipo de reclamación alerta de riesgo Zurich", parsea la tabla de riesgo del cuerpo y agrega una fila por cada categoría con ponderación mayor a cero.</div>
+          </div>
+        </div>
+        <div class="status-wrapper" onclick="toggleDropdownZurich(event)">
+          <div class="status-badge activo" id="zurich-status-badge">
+            <div class="status-dot"></div>
+            <span id="zurich-status-label">Activo</span>
+            <span style="margin-left:2px; opacity:0.6;">▾</span>
+          </div>
+          <div class="status-dropdown" id="zurich-status-dropdown">
+            <div class="status-option" onclick="setStatusZurich('activo','Activo')">
+              <span class="dot" style="background:var(--green)"></span> Activo
+            </div>
+            <div class="status-option" onclick="setStatusZurich('pendiente','Pendiente')">
+              <span class="dot" style="background:var(--yellow)"></span> Pendiente
+            </div>
+            <div class="status-option" onclick="setStatusZurich('backlog','Backlog')">
+              <span class="dot" style="background:var(--text-dim)"></span> Backlog
+            </div>
+            <div class="status-option" onclick="setStatusZurich('deprecado','Deprecado')">
+              <span class="dot" style="background:#f87171"></span> Deprecado
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <div class="card-section">
+          <h4>Schedule</h4>
+          <div class="schedule-block">
+            <span class="schedule-cron">every 30 minutes</span>
+            <span class="schedule-desc">Time-driven trigger — Google Apps Script</span>
+          </div>
+
+          <h4 style="margin-top:18px;">Herramientas</h4>
+          <div class="tag-list">
+            <span class="tag accent">Google Apps Script</span>
+            <span class="tag">Gmail API (GmailApp)</span>
+            <span class="tag">Google Sheets API</span>
+            <span class="tag">JavaScript ES5</span>
+          </div>
+
+          <h4 style="margin-top:18px;">Flujo</h4>
+          <div class="flow">
+            <span class="flow-step">Time trigger (30min)</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Gmail search (asunto Zurich)</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Parsea tabla de riesgo (HTML)</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Filtra ponderación &gt; 0</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Agrega filas al Sheet</span>
+          </div>
+        </div>
+
+        <div class="card-section">
+          <h4>Columnas generadas</h4>
+          <div class="tag-list">
+            <span class="tag">Fecha</span>
+            <span class="tag">Remesa</span>
+            <span class="tag">Nombre Asegurado</span>
+            <span class="tag">Categoría Riesgo</span>
+            <span class="tag">Tipo de Alerta</span>
+            <span class="tag">Ponderación Riesgo</span>
+          </div>
+
+          <h4 style="margin-top:18px;">Configuración</h4>
+          <div class="tag-list">
+            <span class="tag">SHEET_ID</span>
+            <span class="tag">GMAIL_QUERY</span>
+            <span class="tag">SHEET_NAME</span>
+            <span class="tag">CONTROL_SHEET_NAME</span>
+            <span class="tag">STATUS_SHEET_NAME</span>
+          </div>
+        </div>
+
+        <div class="card-section" style="grid-column: 1 / -1;">
+          <h4>Output — Preview de fila generada</h4>
+          <div class="output-preview">
+            <pre><span class="hl">Fecha               Remesa          Nombre Asegurado       Categoría Riesgo      Ponderación</span>
+<span class="ok">25/06/2026 19:51:35  2026000814622   IVAN GOMEZ MONTES      Documental Metadata   75</span>
+
+<span class="warn">Tipo de Alerta: "El documento ha sido producido en un software de edición documental"</span></pre>
+          </div>
+        </div>
+
+        <div class="card-section" style="grid-column: 1 / -1;">
+          <h4>Reglas de negocio</h4>
+          <div class="tag-list">
+            <span class="tag">Solo mails originales de hello@lisainsurtech.com (ignora Fwd:)</span>
+            <span class="tag">Una fila por categoría con ponderación &gt; 0</span>
+            <span class="tag">Ponderación = 0 se descarta</span>
+            <span class="tag">Dedupe por Message ID — hoja oculta _procesados</span>
+            <span class="tag">Ordena por fecha ascendente — más reciente al final</span>
+            <span class="tag">Zona horaria: UTC-3 (Buenos Aires)</span>
+            <span class="tag">Solo escribe en columnas A-F, nunca toca columnas auxiliares</span>
+          </div>
+        </div>
+
+        <div class="card-section" style="grid-column: 1 / -1;">
+          <h4>Hoja "Control"</h4>
+          <div class="tag-list">
+            <span class="tag accent">B1 — Última corrida del script (siempre)</span>
+            <span class="tag accent">B2 — Última actualización con datos nuevos</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="card-footer">
+        <span style="font-family: var(--mono); font-size: 11px; color: var(--text-dim);">⌥ Instalado via Extensions → Apps Script en el Spreadsheet del equipo</span>
+      </div>
+    </div>
+
+  </div>
+
   <!-- PAGE: Mercantil Report -->
   <div class="page" id="page-mercantil">
     <div class="page-header">
@@ -805,11 +961,33 @@ Finalizado              →  04 - Completo        100%</span>
     event.stopPropagation();
   }
 
+  function toggleDropdownZurich(e) {
+    e.stopPropagation();
+    document.getElementById('zurich-status-dropdown').classList.toggle('open');
+  }
+
+  function setStatusZurich(cls, label) {
+    const badge = document.getElementById('zurich-status-badge');
+    badge.className = 'status-badge ' + cls;
+    document.getElementById('zurich-status-label').textContent = label;
+    document.getElementById('zurich-status-dropdown').classList.remove('open');
+
+    const navBadge = document.getElementById('nav-badge-zurich');
+    if (navBadge) {
+      navBadge.className = 'nav-badge ' + cls;
+      navBadge.textContent = label.toLowerCase();
+    }
+
+    event.stopPropagation();
+  }
+
   document.addEventListener('click', () => {
     const dd = document.getElementById('status-dropdown');
     if (dd) dd.classList.remove('open');
     const ddg = document.getElementById('gantt-status-dropdown');
     if (ddg) ddg.classList.remove('open');
+    const ddz = document.getElementById('zurich-status-dropdown');
+    if (ddz) ddz.classList.remove('open');
   });
 </script>
 
